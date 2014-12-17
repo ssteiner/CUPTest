@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:cup="urn:cisco:cup:presence:soap" name="presence" targetNamespace="urn:cisco:cup:presence:soap" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:cisco:cup:presence:soap">
+      <xsd:element name="getPolledPresence">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="contactsList" type="cup:ContactListType" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceType" type="cup:PresenceType" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getPolledPresenceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceResponse" type="cup:PresenceResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Contact">
+        <xsd:attribute name="contactURI" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="BasicPresenceList">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="100" name="contact" type="cup:ContactStatusType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="LoginResponse">
+        <xsd:choice>
+          <xsd:element name="success">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="session-key" type="xsd:token" />
+              </xsd:sequence>
+              <xsd:attribute name="backupServer" type="xsd:string" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="redirect">
+            <xsd:complexType>
+              <xsd:attribute name="primaryServer" type="xsd:string" use="optional" />
+              <xsd:attribute name="backupServer" type="xsd:string" use="optional" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+      <xsd:simpleType name="GetPresenceStatusType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="AVAILABLE" />
+          <xsd:enumeration value="BUSY" />
+          <xsd:enumeration value="DND" />
+          <xsd:enumeration value="AWAY" />
+          <xsd:enumeration value="UNAVAILABLE" />
+          <xsd:enumeration value="UNKNOWN" />
+          <xsd:enumeration value="VACATION" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="SetPresenceStatusType">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="AVAILABLE" />
+          <xsd:pattern value="BUSY" />
+          <xsd:pattern value="DND" />
+          <xsd:pattern value="AWAY" />
+          <xsd:pattern value="UNAVAILABLE" />
+          <xsd:pattern value="VACATION" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="ContactStatusType">
+        <xsd:attribute name="contactURI" type="xsd:string" />
+        <xsd:attribute name="presenceStatus" type="cup:GetPresenceStatusType" />
+      </xsd:complexType>
+      <xsd:complexType name="ContactListType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="100" name="contact" type="cup:Contact" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="session-key" type="xsd:string" />
+      <xsd:simpleType name="PresenceType">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="BASIC_PRESENCE" />
+          <xsd:pattern value="RICH_PRESENCE" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="PresenceResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="presenceType" type="cup:PresenceType" />
+          <xsd:element minOccurs="0" name="basicPresenceList" type="cup:BasicPresenceList" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="richPresenceList" type="xsd:anyType" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="getSubscribedPresence">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="subscriptionID" type="xsd:int" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceType" type="cup:PresenceType" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getSubscribedPresenceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceResponse" type="cup:PresenceResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setPresence">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceType" type="cup:PresenceType" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="presenceInfo" type="cup:PresenceInfoType" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="expiration">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="3600" />
+                  <xsd:maxInclusive value="86400" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="setPresenceResponse" type="cup:ResponseStatusType" />
+      <xsd:complexType name="PresenceInfoType">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="basicPresence" type="cup:SetPresenceStatusType" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="richPresence" type="xsd:anyType" />
+          <xsd:element minOccurs="1" maxOccurs="1" name="override" type="xsd:boolean" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="subscribe">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="1" name="contactsList" type="cup:ContactListType" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="subscriptionType" type="cup:EventType" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="expiration">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="3600" />
+                  <xsd:maxInclusive value="86400" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element minOccurs="1" maxOccurs="1" name="endPointID" type="xsd:int" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="subscriptionID" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="subscribeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="subscriptionID" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:simpleType name="EventType">
+        <xsd:restriction base="xsd:string" />
+      </xsd:simpleType>
+      <xsd:element name="unsubscribe">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="unsubscribeRequest" type="cup:UnsubscribeRequest" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="unsubscribeResponse" type="cup:ResponseStatusType" />
+      <xsd:complexType name="UnsubscribeRequest">
+        <xsd:sequence>
+          <xsd:element name="subscriptionID" type="xsd:int" />
+          <xsd:choice>
+            <xsd:element name="contactsList" type="cup:ContactListType" />
+            <xsd:element name="unsubscribeAll" />
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="registerEndPoint">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="1" name="url" type="xsd:string" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="endPointID" type="xsd:int" />
+            <xsd:element minOccurs="1" maxOccurs="1" name="expiration">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="3600" />
+                  <xsd:maxExclusive value="86400" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="registerEndPointResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="endPointID" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="unregisterEndPoint">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="endPointID" type="xsd:int" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="unregisterEndPointResponse" type="cup:ResponseStatusType" />
+      <xsd:complexType name="ResponseStatusType">
+        <xsd:sequence>
+          <xsd:element minOccurs="1" maxOccurs="1" name="status">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="SUCCESS" />
+                <xsd:enumeration value="FAILURE" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="login">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="1" name="username" type="xsd:token" />
+            <xsd:choice>
+              <xsd:element name="password" type="xsd:normalizedString" />
+              <xsd:element name="app-session-id" type="xsd:normalizedString" />
+            </xsd:choice>
+          </xsd:sequence>
+          <xsd:attribute name="force" type="xsd:boolean" />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="loginResponse" type="cup:LoginResponse" />
+      <xsd:element name="logout">
+        <xsd:complexType />
+      </xsd:element>
+      <xsd:element name="logoutResponse" type="cup:ResponseStatusType" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="SessionHeaderMessage">
+    <wsdl:part name="sessionKeyHeader" element="cup:session-key" />
+  </wsdl:message>
+  <wsdl:message name="loginRequest">
+    <wsdl:part name="params" element="cup:login" />
+  </wsdl:message>
+  <wsdl:message name="loginResponse">
+    <wsdl:part name="params" element="cup:loginResponse" />
+  </wsdl:message>
+  <wsdl:message name="logoutRequest">
+    <wsdl:part name="params" element="cup:logout" />
+  </wsdl:message>
+  <wsdl:message name="logoutResponse">
+    <wsdl:part name="params" element="cup:logoutResponse" />
+  </wsdl:message>
+  <wsdl:message name="getPolledPresenceRequest">
+    <wsdl:part name="params" element="cup:getPolledPresence" />
+  </wsdl:message>
+  <wsdl:message name="getPolledPresenceResponse">
+    <wsdl:part name="params" element="cup:getPolledPresenceResponse" />
+  </wsdl:message>
+  <wsdl:message name="getSubscribedPresenceRequest">
+    <wsdl:part name="params" element="cup:getSubscribedPresence" />
+  </wsdl:message>
+  <wsdl:message name="getSubscribedPresenceResponse">
+    <wsdl:part name="params" element="cup:getSubscribedPresenceResponse" />
+  </wsdl:message>
+  <wsdl:message name="setPresenceRequest">
+    <wsdl:part name="params" element="cup:setPresence" />
+  </wsdl:message>
+  <wsdl:message name="setPresenceResponse">
+    <wsdl:part name="params" element="cup:setPresenceResponse" />
+  </wsdl:message>
+  <wsdl:message name="subscribeRequest">
+    <wsdl:part name="params" element="cup:subscribe" />
+  </wsdl:message>
+  <wsdl:message name="subscribeResponse">
+    <wsdl:part name="params" element="cup:subscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="unsubscribeRequest">
+    <wsdl:part name="params" element="cup:unsubscribe" />
+  </wsdl:message>
+  <wsdl:message name="unsubscribeResponse">
+    <wsdl:part name="params" element="cup:unsubscribeResponse" />
+  </wsdl:message>
+  <wsdl:message name="registerEndPointRequest">
+    <wsdl:part name="parameters" element="cup:registerEndPoint" />
+  </wsdl:message>
+  <wsdl:message name="registerEndPointResponse">
+    <wsdl:part name="params" element="cup:registerEndPointResponse" />
+  </wsdl:message>
+  <wsdl:message name="unregisterEndPointRequest">
+    <wsdl:part name="params" element="cup:unregisterEndPoint" />
+  </wsdl:message>
+  <wsdl:message name="unregisterEndPointResponse">
+    <wsdl:part name="params" element="cup:unregisterEndPointResponse" />
+  </wsdl:message>
+  <wsdl:portType name="PresenceSoapPortType">
+    <wsdl:operation name="login">
+      <wsdl:input message="cup:loginRequest" />
+      <wsdl:output message="cup:loginResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <wsdl:input message="cup:logoutRequest" />
+      <wsdl:output message="cup:logoutResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="getPolledPresence">
+      <wsdl:input message="cup:getPolledPresenceRequest" />
+      <wsdl:output message="cup:getPolledPresenceResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="getSubscribedPresence">
+      <wsdl:input message="cup:getSubscribedPresenceRequest" />
+      <wsdl:output message="cup:getSubscribedPresenceResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="setPresence">
+      <wsdl:input message="cup:setPresenceRequest" />
+      <wsdl:output message="cup:setPresenceResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <wsdl:input message="cup:subscribeRequest" />
+      <wsdl:output message="cup:subscribeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="unsubscribe">
+      <wsdl:input message="cup:unsubscribeRequest" />
+      <wsdl:output message="cup:unsubscribeResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="registerEndPoint">
+      <wsdl:input message="cup:registerEndPointRequest" />
+      <wsdl:output message="cup:registerEndPointResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="unregisterEndPoint">
+      <wsdl:input message="cup:unregisterEndPointRequest" />
+      <wsdl:output message="cup:unregisterEndPointResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PresenceSoapBinding" type="cup:PresenceSoapPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getPolledPresence">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/getPresence" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSubscribedPresence">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/getSubscribedPresence" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setPresence">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/setPresence" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="subscribe">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/subscribe" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="unsubscribe">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/unsubscribe" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="registerEndPoint">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/registerEndPoint" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="unregisterEndPoint">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/unregisterEndPoint" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="login">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/login" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <soap:operation soapAction="urn:cisco:cup:presence:soap/logout" />
+      <wsdl:input>
+        <soap:header message="cup:SessionHeaderMessage" part="sessionKeyHeader" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PresenceSoapService">
+    <wsdl:port name="PresenceSoapPort" binding="cup:PresenceSoapBinding">
+      <soap:address location="http://cupserver:8081/presence-service/soap" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
